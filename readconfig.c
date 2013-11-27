@@ -399,7 +399,14 @@ handle_config_line(char *inbuf)
 	return;
     }
 
-    devname = strtok_r(NULL, ":", &strtok_data);
+    if (strtok_data[0] == '\'') {
+        /* device name may contains character ':'
+         eg. 2003:raw:5:'/dev/serial/by-path/pci-0000:00:1d.1-usb-0:2.1:1.0-port0':9600 */
+        devname = strtok_r(NULL, "'", &strtok_data);
+    }
+    else {
+        devname = strtok_r(NULL, ":", &strtok_data);
+    }
     if (devname == NULL) {
 	syslog(LOG_ERR, "No device name given on line %d", lineno);
 	return;
